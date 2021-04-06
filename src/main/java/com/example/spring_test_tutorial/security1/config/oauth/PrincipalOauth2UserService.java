@@ -1,6 +1,9 @@
 package com.example.spring_test_tutorial.security1.config.oauth;
 
 import com.example.spring_test_tutorial.security1.config.auth.PrincipalDetails;
+import com.example.spring_test_tutorial.security1.config.oauth.provider.GoogleUserInfo;
+import com.example.spring_test_tutorial.security1.config.oauth.provider.NaverUserInfo;
+import com.example.spring_test_tutorial.security1.config.oauth.provider.OAuth2UserInfo;
 import com.example.spring_test_tutorial.security1.model.User;
 import com.example.spring_test_tutorial.security1.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +26,21 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oauth2User =super.loadUser(userRequest);
 
-        String provider = userRequest.getClientRegistration().getClientId();// google
-        String providerId = oauth2User.getAttribute("sub");// 구글의 개인 id
+        OAuth2UserInfo oauthUserInfo =null;
+        if(userRequest.getClientRegistration().getRegistrationId().equals("google")){
+            oauthUserInfo= new GoogleUserInfo(oauth2User.getAttributes());
+        } else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")){
+            oauthUserInfo= new NaverUserInfo(oauth2User.getAttributes());
+        }
+        else{}
+
+
+
+        String provider = oauthUserInfo.getProvider();// google
+        String providerId = oauthUserInfo.getProviderId();// 구글의 개인 id
         String username = provider + "_" + providerId;   //google_sub
         String password =   "21312312";// 적당히 암호화해서 넣어도 되는데 의미는 없음
-        String email = oauth2User.getAttribute("email");
+        String email = oauthUserInfo.getEmail();
         String role = "ROLE_USER";
 
         User userEntity = userRepository.findByUsername(username);
