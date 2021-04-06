@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### 보안 ###
-src/main/resources/application.*
+src/main/resources/application.yml
