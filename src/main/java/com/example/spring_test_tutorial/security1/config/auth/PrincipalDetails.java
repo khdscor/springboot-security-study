@@ -18,7 +18,7 @@ import com.example.spring_test_tutorial.security1.model.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-public class PrincipalDetails implements UserDetails, OAuth2User {
+public class  PrincipalDetails implements UserDetails, OAuth2User {
 
     private User user;
 

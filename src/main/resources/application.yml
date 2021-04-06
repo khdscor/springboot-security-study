@@ -11,8 +11,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/security?serverTimezone=Asia/Seoul
-    username:
-    password:
+    username: khdscor
+    password: mbcsbs21**
 
   jpa:
     open-in-view: true
@@ -36,8 +36,8 @@ spring:
       client:
         registration:
           google:
-            client-id:
-            client-secret:
+            client-id: 1098001488987-kaidmr0dvjh1q8jhgr2ootr7socn30la.apps.googleusercontent.com
+            client-secret: vLVkerP46l8HhI4uxR8RUF0W
             scope:
               - email
               - profile
