@@ -1,8 +1,12 @@
 package com.example.spring_test_tutorial.security1.config.oauth;
 
 import com.example.spring_test_tutorial.security1.config.auth.PrincipalDetails;
+import com.example.spring_test_tutorial.security1.config.oauth.provider.GoogleUserInfo;
+import com.example.spring_test_tutorial.security1.config.oauth.provider.NaverUserInfo;
+import com.example.spring_test_tutorial.security1.config.oauth.provider.OAuth2UserInfo;
 import com.example.spring_test_tutorial.security1.model.User;
 import com.example.spring_test_tutorial.security1.repository.UserRepository;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,11 +27,21 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oauth2User =super.loadUser(userRequest);
 
-        String provider = userRequest.getClientRegistration().getClientId();// google
-        String providerId = oauth2User.getAttribute("sub");// 구글의 개인 id
-        String username = provider + "_" + providerId;   //google_sub
+        OAuth2UserInfo oauthUserInfo =null;
+        if(userRequest.getClientRegistration().getRegistrationId().equals("google")){
+            oauthUserInfo= new GoogleUserInfo(oauth2User.getAttributes());
+        } else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")){
+            oauthUserInfo= new NaverUserInfo((Map<String, Object>) oauth2User.getAttributes().get("response"));
+        }  // response 안에 response 가 있기에 이런식으로 구성 id,email,name 이 들어있다.
+
+
+
+
+        String provider = oauthUserInfo.getProvider();// google or naver
+        String providerId = oauthUserInfo.getProviderId();// 개인 id
+        String username = provider + "_" + providerId;   //
         String password =   "21312312";// 적당히 암호화해서 넣어도 되는데 의미는 없음
-        String email = oauth2User.getAttribute("email");
+        String email = oauthUserInfo.getEmail();
         String role = "ROLE_USER";
 
         User userEntity = userRepository.findByUsername(username);
@@ -42,9 +56,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
                 .providerId(providerId)
                 .build();
             userRepository.save(userEntity);
-        }
-        else{
-
         }
 
         return new PrincipalDetails(userEntity, oauth2User.getAttributes());
